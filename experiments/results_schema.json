@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "thinwallet-experiment-v1",
+  "title": "ThinWallet raw experiment bundle schema",
+  "schema_version": "thinwallet-experiment-v1",
+  "missing_value_policy": "Use JSON null or an explicit unavailable status; never synthesize zero.",
+  "instrumentation_policy": "Instrumentation is opt-in and must not alter proofs, transcripts, randomness, token semantics, or network protocol.",
+  "bundle_files": {
+    "manifest.json": {
+      "required": [
+        "schema_version",
+        "git_commit",
+        "git_dirty",
+        "build_profile",
+        "enabled_features",
+        "experiment_mode",
+        "workload",
+        "constraint_count",
+        "padded_size",
+        "witness_size",
+        "q",
+        "m",
+        "prover_seed",
+        "workload_seed",
+        "thread_count",
+        "device_id",
+        "device_model",
+        "soc",
+        "total_ram_bytes",
+        "android_version",
+        "kernel_version",
+        "charging_state",
+        "battery_level_start",
+        "ambient_temperature_if_available",
+        "start_time_utc",
+        "command_line",
+        "capabilities"
+      ],
+      "nullable_when_unavailable": [
+        "git_commit",
+        "git_dirty",
+        "device_model",
+        "soc",
+        "total_ram_bytes",
+        "android_version",
+        "kernel_version",
+        "charging_state",
+        "battery_level_start",
+        "ambient_temperature_if_available"
+      ]
+    },
+    "summary.json": {
+      "required": [
+        "schema_version",
+        "status",
+        "exit_status",
+        "experiment_mode",
+        "workload",
+        "run_id",
+        "backend_result",
+        "instrumentation_status"
+      ]
+    },
+    "phases.jsonl": {
+      "record_fields": [
+        "event",
+        "phase",
+        "timestamp_monotonic_ns",
+        "process_cpu_ns",
+        "rss_bytes",
+        "vmhwm_bytes",
+        "pss_bytes_if_available",
+        "temp_storage_bytes",
+        "read_bytes",
+        "write_bytes",
+        "upload_bytes",
+        "download_bytes",
+        "token_state_if_relevant"
+      ],
+      "phase_1_status": "unavailable"
+    },
+    "memory.csv": {
+      "columns": [
+        "timestamp_monotonic_ns",
+        "active_phase",
+        "vmrss_bytes",
+        "vmhwm_bytes",
+        "vmsize_bytes",
+        "rssanon_bytes",
+        "rssfile_bytes",
+        "rssshmem_bytes",
+        "pss_bytes",
+        "private_clean_bytes",
+        "private_dirty_bytes",
+        "shared_clean_bytes",
+        "shared_dirty_bytes"
+      ],
+      "phase_1_status": "header_only_unavailable"
+    },
+    "io.csv": {
+      "columns": [
+        "timestamp_monotonic_ns",
+        "active_phase",
+        "read_bytes",
+        "write_bytes",
+        "rchar",
+        "wchar"
+      ],
+      "phase_1_status": "header_only_unavailable"
+    },
+    "network.json": {
+      "required": [
+        "schema_version",
+        "status",
+        "reason"
+      ],
+      "phase_1_status": "unavailable"
+    },
+    "proof.json": {
+      "required": [
+        "schema_version",
+        "proof_length",
+        "proof_sha256",
+        "proof_bytes_equal_to_native",
+        "transcript_event_count",
+        "transcript_sha256",
+        "transcript_equal_to_native",
+        "ordered_commitment_count",
+        "ordered_commitments_sha256",
+        "ordered_commitments_equal_to_native",
+        "verifier_result",
+        "verifier_is_unmodified"
+      ]
+    },
+    "token.json": {
+      "required": [
+        "schema_version",
+        "enabled",
+        "state",
+        "token_file_bytes",
+        "token_id",
+        "token_id_policy"
+      ],
+      "token_id_policy": "never log full token identifiers"
+    },
+    "stdout.log": {
+      "format": "UTF-8 text"
+    },
+    "stderr.log": {
+      "format": "UTF-8 text"
+    }
+  }
+}

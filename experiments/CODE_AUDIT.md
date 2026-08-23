@@ -1,0 +1,166 @@
+# ThinWallet Code Audit
+
+This audit is based on the checked-in source and existing raw result records. The
+workspace root is not a Git checkout, so a commit and dirty-state value cannot be
+recovered here; experiment manifests record both as `null`.
+
+## Entrypoints And Build
+
+- The desktop prover entrypoint is `libspartan/src/bin/phase_v2_pbmo.rs:1291`.
+  The original baseline path enters `upstream` at line 440; the patched path
+  enters `patched_run` at line 641.
+- `thinwallet_android_bench` is declared in `libspartan/Cargo.toml:25` and
+  includes the same prover source. It is therefore an alternate binary name, not
+  a distinct protocol implementation.
+- `android/scripts/build_android_arm64.sh:20-24` builds the release binaries for
+  `aarch64-linux-android`. The V5B network/crash build uses the same binary in
+  `v5b-real-network-crash/scripts/build_android_v5b.sh:9`.
+
+## Relation And Witness Construction
+
+- `relation_entries` at `libspartan/src/bin/phase_v2_pbmo.rs:163` selects either
+  an authenticated replay source, a deterministic credential workload, or the
+  synthetic identity relation.
+- Profile S construction is implemented in
+  `libspartan/src/credential_workloads/profile_s.rs:675-791`. Raw constraints,
+  raw variables/witness elements, public inputs, padding, `q`, and `m` are
+  derived from the constructed builder at lines 721-775.
+- The baseline creates `Instance`, `VarsAssignment`, and `InputsAssignment` at
+  `phase_v2_pbmo.rs:447-456`. The patched path performs the corresponding work at
+  lines 746-762.
+- Profile S fixtures are deterministic. The frozen Spartan dependency feature
+  uses the scalar `0x3a5202d2` as prover tape initialization in
+  `vendor/spartan-0.9.0/src/random.rs:19-20`. Phase 1 therefore accepts only
+  prover seed `978453202` and workload seed `0`; it fails rather than recording
+  an unapplied seed.
+
+## Prover, Sumcheck, Commitment, And Opening
+
+- The baseline complete prover call is
+  `libspartan/src/bin/phase_v2_pbmo.rs:472`; patched owned/non-owned prover calls
+  are at lines 918 and 928.
+- R1CS phase-one Sumcheck begins in
+  `vendor/spartan-0.9.0/src/r1csproof.rs:116`, with its proof call at line 133.
+  Phase two begins at line 151 and calls its Sumcheck at line 163. Both return to
+  `R1CSProof::prove`, which starts at line 183.
+- Standard and streaming Sumcheck implementations are in
+  `vendor/spartan-0.9.0/src/sumcheck.rs:193-622`; the streaming batched entry is
+  at line 436. The end of each Sumcheck is the return of its
+  `SumcheckInstanceProof` and challenge/evaluation tuple.
+- Dense private Hyrax commitment dispatch is in
+  `vendor/spartan-0.9.0/src/dense_mlpoly.rs:167-277`. The PBMO provider scope is
+  installed by `vendor/spartan-0.9.0/src/pbmo_commitment.rs:49`.
+- The final variable evaluation opening is invoked from
+  `vendor/spartan-0.9.0/src/r1csproof.rs:350`. Dense opening starts at
+  `dense_mlpoly.rs:822`; sparse dereference/opening paths are selected around
+  `sparse_mlpoly.rs:380-409` and `1832-1917`.
+- Proof serialization is performed in `phase_v2_pbmo.rs:476` for baseline and
+  line 965 for patched runs. Patched and unchanged-baseline verification follow
+  at lines 970-1019.
+
+## PBMO Pipeline
+
+- Mask scalars are domain-separated and derived in
+  `preprocessed-pbmo/src/field.rs:25-62`.
+- Online masking and malicious spool writes occur in
+  `preprocessed-pbmo/src/provider.rs:407-461`.
+- Upload uses `PbmoTransport::send_masked_chunk` at `provider.rs:461`; the framed
+  TCP implementation is in `transport.rs:633-780`.
+- Loopback server evaluation performs the row MSMs at
+  `transport.rs:903-926`; the TCP server validates the complete request and
+  starts its MSMs at lines 1201-1218.
+- The malicious aggregate check replays the spool and forms its batched local MSM
+  in `provider.rs:608-641`. Recovery subtracts the preprocessed corrections at
+  lines 646-654.
+- The current TCP server buffers the complete `q*m` request before MSM
+  evaluation. It is not a streaming server accumulator.
+
+## Token State Machine
+
+- States are exactly `AVAILABLE`, `RESERVED`, `SPENT`, and `BURNED` in
+  `preprocessed-pbmo/src/token.rs:87-91`.
+- Generation creates an available token at lines 141-166. Durable reservation is
+  at lines 532-550. Finalization maps a reserved token to spent on success or
+  burned on failure at lines 556-579.
+- Store open performs recovery at lines 492-493. Reserved tokens are burned by
+  `recover_reserved` at lines 693-708; inconsistent available records are burned
+  at lines 711-731.
+- The integrated prover reserves before proving and finalizes after proof
+  generation in `libspartan/src/bin/phase_v2_pbmo.rs:883-949`.
+- The software crash-consistent provider does not defend against a complete
+  persistent-state snapshot rollback. Hardware monotonic and external witness
+  providers remain interfaces, not deployed implementations.
+
+## Verified Workload Shapes
+
+The first two rows are generated by the Profile S builder and recorded in
+`credential_workloads/results/phase_v4c_profile_s_audit.json`. H0-H2 are the
+actual held-out records in `v4g/final_held_out_selection.json`; they were not
+copied from the suggested shapes.
+
+| Alias | Canonical workload | Raw constraints | Padded size | Witness elements | Public inputs | q | m |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| S-W1 | S-W1 | 5,543 | 8,192 | 5,515 | 10 | 64 | 128 |
+| S-W4 | S-W4 | 16,135 | 16,384 | 16,082 | 22 | 128 | 128 |
+| H0 | WK(8,0,0,None) | 36,531 | 65,536 | 36,522 | 48 | 256 | 256 |
+| H1 | WK(52,1,32,SparseMerkle) | 252,855 | 262,144 | 253,050 | 272 | 512 | 512 |
+| H2 | WK(8,8,32,SparseMerkle) | 223,955 | 262,144 | 224,170 | 80 | 512 | 512 |
+
+The builder also supports S-W2, S-W3, and parameterized
+`WK(k,r,d,backend)` workloads. A workload is admitted only when the actual raw
+relation and witness fit the selected power-of-two padding.
+
+## Four Comparable Modes
+
+The opt-in `scripts/thinwallet-bench` runner supplies
+`--experiment-mode {native,pbmo-only,memory-only,full}`:
+
+| Mode | Commitment path | Complete memory flags | Durable token lifecycle |
+| --- | --- | --- | --- |
+| native | Unmodified baseline local Hyrax | off | off |
+| pbmo-only | Malicious PBMO provider | off | on |
+| memory-only | Patched local native provider | all on | off |
+| full | Malicious PBMO provider | all on | on |
+
+The complete memory flag set is fixed streaming, multi-target streaming,
+active-state streaming, transcript recomputation, streaming dereference/opening,
+and credential streaming. `memory-only` still uses the prover-only commitment
+provider interface, but selects `NativeLocalPbmoProvider`: it performs local
+native row MSMs and does not derive masks, upload private scalars, invoke remote
+evaluation, or recover PBMO corrections. Phase 1 also prevents token generation
+on this path.
+
+All four modes use the same canonical workload fixture, public inputs, witness,
+frozen deterministic prover tape, workload seed, requested Rayon thread count,
+Ristretto/Hyrax backend, generator dimensions, transcript label, and native proof
+encoding. The `native` mode uses the frozen baseline source package while the
+other modes use the patched 0.9.0 package; compatibility is checked by the
+unchanged baseline verifier. Byte/transcript/ordered-commitment equivalence
+instrumentation is not yet present and is explicitly deferred to Phase 2.
+
+## EMSM Availability
+
+There is no verified, callable, end-to-end EMSM baseline suitable for the
+ThinWallet four-mode comparison:
+
+- `memory-bounded-sap/emsm_real` is a research prototype whose own README
+  classifies the remote-H privacy problem as blocking and explicitly does not
+  claim full EMSM privacy.
+- `libspartan/src/main.rs:432-482` contains Ristretto EMSM self-check and
+  diagnostic harnesses, not a paper-author implementation integrated into the
+  complete ThinWallet prover.
+
+Consequently Phase 6 must not report either harness as an independent EMSM
+baseline. A credible run requires a validated implementation, source parameters,
+security parameters, and a privacy-preserving remote-H path; these are currently
+`unavailable`.
+
+## Phase 1 Boundaries
+
+The raw bundle schema and four-mode switch are implemented. Phase-level events,
+memory/PSS and I/O sampling, temporary-storage peaks, framing-layer network
+accounting, proof/transcript equality, ablations, token preprocessing timing,
+crash matrices, Android orchestration, and result summaries remain unavailable
+until their designated phases. Empty timeline files contain headers only and
+their manifest capabilities are `false`; no missing measurement is represented
+as zero.

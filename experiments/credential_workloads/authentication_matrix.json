@@ -1,0 +1,77 @@
+{
+  "classification": "CREDENTIAL_AUTHENTICATION_BACKEND_SELECTED",
+  "selected": "native_field_mimc7_prf_mac_with_authenticated_key_commitment",
+  "candidates": [
+    {
+      "mechanism": "standard signature verification using non-native arithmetic",
+      "security_model": "EUF-CMA public-key signature plus issuer PKI",
+      "standardization": "available for schemes such as EdDSA/ECDSA, but not native to Ristretto scalar R1CS",
+      "arithmetic": "non-native",
+      "curve_or_field": "signature curve plus curve25519-dalek Scalar constraint field",
+      "estimated_constraints": null,
+      "implementation_availability": "no audited libspartan 0.9.0 R1CS gadget in this repository",
+      "maintenance": "BLOCKED on a maintained non-native gadget",
+      "proof_semantics": "publicly verifiable issuer signature inside the SNARK",
+      "genuine_issuer_authenticity": true,
+      "integration_risk": "high"
+    },
+    {
+      "mechanism": "native-field Schnorr-like signature",
+      "security_model": "discrete-log signature in a circuit-compatible group",
+      "standardization": "construction-dependent; no selected standardized credential profile",
+      "arithmetic": "partly native field, group gadget required",
+      "curve_or_field": "requires a group whose scalar/base arithmetic is practical in the R1CS field",
+      "estimated_constraints": null,
+      "implementation_availability": "no audited gadget in this repository",
+      "maintenance": "requires new gadget and security review",
+      "proof_semantics": "issuer public-key signature if implemented soundly",
+      "genuine_issuer_authenticity": true,
+      "integration_risk": "high"
+    },
+    {
+      "mechanism": "91-round MiMC7 native-field PRF-MAC with authenticated issuer-key commitment",
+      "security_model": "symmetric-key PRF/MAC security; only issuer knows key; registry or issuer authenticates key commitment",
+      "standardization": "research construction; not a standardized credential signature or MAC profile",
+      "arithmetic": "native",
+      "curve_or_field": "curve25519-dalek Scalar",
+      "estimated_constraints": 3652,
+      "implementation_availability": "implemented locally as explicit R1CS",
+      "maintenance": "local experimental implementation",
+      "proof_semantics": "knowledge of a credential field tuple carrying a valid issuer-keyed MAC bound to an externally authenticated issuer-key commitment",
+      "genuine_issuer_authenticity": true,
+      "integration_risk": "medium-high",
+      "selected": true,
+      "measured_constraint_breakdown_per_credential": {
+        "issuer_key_commitment": 731,
+        "issuer_mimc7_prf_mac": 2920,
+        "mac_equality": 1
+      }
+    },
+    {
+      "mechanism": "hash-based issuer-authenticated construction",
+      "security_model": "only authentic if the hash preimage or root is itself issuer-authenticated",
+      "standardization": "not a signature by itself",
+      "arithmetic": "native if algebraic hash is selected",
+      "curve_or_field": "constraint field",
+      "estimated_constraints": null,
+      "implementation_availability": "hash gadgets exist conceptually; authenticated root semantics remain external",
+      "maintenance": "construction-specific",
+      "proof_semantics": "commitment membership, not issuer authenticity without an authenticated anchor",
+      "genuine_issuer_authenticity": false,
+      "integration_risk": "high if mislabeled"
+    },
+    {
+      "mechanism": "signature verification outside SNARK plus in-circuit binding",
+      "security_model": "external signature verifier plus sound binding from signed record to private witness",
+      "standardization": "can use a standard signature externally",
+      "arithmetic": "signature arithmetic outside; binding native",
+      "curve_or_field": "external signature curve and constraint field",
+      "estimated_constraints": null,
+      "implementation_availability": "Candidate A experiments exist, but authenticated-state transition remains OPEN",
+      "maintenance": "split across host verifier and circuit",
+      "proof_semantics": "requires verifier-visible evidence that the externally verified record is exactly the hidden record",
+      "genuine_issuer_authenticity": true,
+      "integration_risk": "high until the binding gap is closed"
+    }
+  ]
+}

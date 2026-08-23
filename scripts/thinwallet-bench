@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""Stable executable wrapper for the ThinWallet experiment CLI."""
+
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+
+def main() -> None:
+    arguments = sys.argv[1:]
+    translated: list[str] = []
+    index = 0
+    while index < len(arguments):
+        argument = arguments[index]
+        if argument == "--seed":
+            translated.append("--prover-seed")
+            index += 1
+            if index >= len(arguments):
+                raise SystemExit("--seed requires a value")
+            translated.append(arguments[index])
+        elif argument == "--modes":
+            index += 1
+            if index >= len(arguments):
+                raise SystemExit("--modes requires a value")
+            modes = arguments[index].split(",")
+            expected = ["native", "pbmo-only", "memory-only", "full"]
+            if modes != expected:
+                raise SystemExit(
+                    "Phase 2 compare-modes requires "
+                    "native,pbmo-only,memory-only,full"
+                )
+        else:
+            translated.append(argument)
+        index += 1
+    runner = Path(__file__).with_name("thinwallet_bench.py")
+    os.execv(sys.executable, [sys.executable, str(runner), *translated])
+
+
+if __name__ == "__main__":
+    main()

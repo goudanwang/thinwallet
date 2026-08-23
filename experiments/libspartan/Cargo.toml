@@ -1,0 +1,73 @@
+[package]
+name = "thinwallet-libspartan-phase3ar"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+bincode = "1.3"
+chacha20poly1305 = "0.10"
+curve25519-dalek = { version = "=4.1.3", default-features = false, features = ["alloc", "serde", "rand_core"] }
+ed25519-dalek = { version = "=2.2.0", features = ["rand_core"] }
+hmac = "0.12"
+libc = "0.2"
+libspartan = { package = "spartan", version = "=0.9.0" }
+libspartan_baseline = { package = "spartan-baseline-testable", path = "vendor/spartan-baseline-testable-0.9.0", features = ["phase3ar2-deterministic-tests", "thinwallet-experiment"] }
+libspartan_patched = { package = "spartan", path = "vendor/spartan-0.9.0", features = ["phase3ar2-deterministic-tests", "thinwallet-experiment", "multicore"] }
+merlin = "3"
+preprocessed-pbmo = { path = "../preprocessed-pbmo", features = ["thinwallet-experiment"] }
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+sha3 = "0.10"
+thinwallet-instrumentation = { path = "../thinwallet-instrumentation" }
+thiserror = "1"
+
+[[bin]]
+name = "thinwallet_android_bench"
+path = "src/bin/thinwallet_android_bench.rs"
+
+[[bin]]
+name = "phase_v2_pbmo"
+path = "src/bin/phase_v2_pbmo.rs"
+
+[[bin]]
+name = "phase_v4b_credentials"
+path = "src/bin/phase_v4b_credentials.rs"
+
+[[bin]]
+name = "phase_v4b_second_pbmo"
+path = "src/bin/phase_v4b_second_pbmo.rs"
+
+[[bin]]
+name = "phase_v4c_profile_s"
+path = "src/bin/phase_v4c_profile_s.rs"
+
+[[bin]]
+name = "phase_v4e_credential_source"
+path = "src/bin/phase_v4e_credential_source.rs"
+
+[[bin]]
+name = "pbmo_tcp_server"
+path = "src/bin/pbmo_tcp_server.rs"
+
+[[bin]]
+name = "thinwallet_eval_client"
+path = "src/bin/thinwallet_eval_client.rs"
+
+[[bin]]
+name = "thinwallet_eval_server"
+path = "src/bin/thinwallet_eval_server.rs"
+
+[[bin]]
+name = "thinwallet_eval_server_bench"
+path = "src/bin/thinwallet_eval_server_bench.rs"
+
+[[bin]]
+name = "section4_external_fold_stress"
+path = "src/bin/section4_external_fold_stress.rs"
+
+[[bin]]
+name = "scale_workload_describe"
+path = "src/bin/scale_workload_describe.rs"

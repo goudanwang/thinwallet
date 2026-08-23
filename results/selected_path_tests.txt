@@ -1,0 +1,33 @@
+ThinWallet Selected-path lightweight host integration tests
+Build: cargo build --offline --locked --release --bin thinwallet_eval_client --bin thinwallet_eval_server --bin phase_v2_pbmo
+Scope: log_size=12 synthetic relation; no phone, network, or formal campaign
+
+TEST selected_without_pbmo: PASS
+command: thinwallet_eval_client native 12 (separate ARE server)
+assert: exit_status_zero=True
+assert: low_residency_profile_enabled=True
+assert: local_row_msm_used=True
+assert: are_used=True
+assert: local_eval_not_used=True
+assert: native_eval_verified=True
+assert: native_full_verified=True
+assert: proof_released=True
+assert: no_pbmo_token_or_store=True
+
+TEST selected_are_fail_closed: PASS
+command: thinwallet_eval_client native 12 x3 with server fault modes
+assert: fault=modified_eval_proof_byte rejected=True proof_released=False no_local_fallback=True
+assert: fault=other_invocation_response rejected=True proof_released=False no_local_fallback=True
+assert: fault=replayed_completed_invocation rejected=True proof_released=False no_local_fallback=True
+
+TEST pbmo_release_after_verify_and_spent: PASS
+command: phase_v2_pbmo malicious 12 (loopback PBMO)
+assert: exit_status_zero=True
+assert: patched_full_verify_pass=True
+assert: baseline_full_verify_pass=True
+assert: durable_state_spent=True
+assert: spent_marker_observed=True
+assert: proof_released=True
+assert: source_order_verify_then_spent_then_release=True
+
+SUMMARY: passed=3/3

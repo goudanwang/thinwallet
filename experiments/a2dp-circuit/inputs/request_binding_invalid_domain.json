@@ -1,0 +1,9 @@
+{
+  "verifier_domain_hash": "123456790",
+  "nonce": "987654321",
+  "policy_hash": "111111111",
+  "requested_disclosure_mask": "5",
+  "expiry": "20000",
+  "context_hash": "222222222",
+  "expected_request_digest": "623343221761876519286571882740632178101025760303421167805183480011309718067"
+}

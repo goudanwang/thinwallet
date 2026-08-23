@@ -1,0 +1,26 @@
+{
+  "status_marker": "H2_NO_AUDITABLE_PIR_LIBRARY_FOUND",
+  "candidates": [
+    {
+      "scheme": "chalametpir_client/server/common",
+      "selected": false,
+      "reason": "available on crates.io search but not audited or integrated locally"
+    },
+    {
+      "scheme": "inspire",
+      "selected": false,
+      "reason": "available on crates.io search but integration/authentication properties are not audited"
+    },
+    {
+      "scheme": "pir / pir-client",
+      "selected": false,
+      "reason": "insufficient local audit for Phase 2B authenticated batch h retrieval"
+    },
+    {
+      "scheme": "plain encrypted indices",
+      "selected": false,
+      "reason": "not PIR; rejected"
+    }
+  ]
+}
+

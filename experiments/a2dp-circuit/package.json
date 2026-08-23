@@ -1,0 +1,16 @@
+{
+  "name": "a2dp-circuit-sanity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Isolated Circom/snarkjs toolchain sanity check for A2DP feasibility measurements.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "check:env": "bash scripts/check_env.sh",
+    "build:sanity": "bash scripts/build_sanity.sh"
+  },
+  "dependencies": {
+    "circomlib": "2.0.5",
+    "circomlibjs": "0.1.7",
+    "snarkjs": "0.7.5"
+  }
+}

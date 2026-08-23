@@ -1,0 +1,15 @@
+format_version = 1
+rust_release = "1.92.0"
+rust_host = "x86_64-unknown-linux-gnu"
+android_target = "aarch64-linux-android"
+android_ndk_release = "r27c"
+android_ndk_revision = "27.2.12479018"
+android_min_api = 23
+android_clang = "18.0.3"
+linker = "/home/ubuntu/.local/android/android-ndk-r27c/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android23-clang"
+allocator = "system"
+release_rustflags = ["-C", "target-cpu=generic"]
+cargo_lock = "experiments/libspartan/Cargo.lock"
+cargo_lock_sha256 = "69f3b4aa8b4266d698f1b1e58a8d151e8670779f0586d6a95947a374df05b1af"
+curve25519_dalek = "4.1.3"
+libspartan = "0.9.0"

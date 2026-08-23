@@ -1,0 +1,106 @@
+{
+  "measurement_type": "MEASURED",
+  "selected_backend": "INTERNAL_FFT_FREE_MULTILINEAR_SUMCHECK_PHASE1_BACKEND",
+  "status_marker": "SUMCHECK_BACKEND_SELECTED",
+  "candidates": [
+    {
+      "id": "B0",
+      "name": "Spartan-style R1CS + Sumcheck + multilinear commitment",
+      "available_in_repo": false,
+      "prover_uses_fft_ntt": "no by architecture, but no production crate present",
+      "prover_uses_low_degree_extension": "no",
+      "prover_uses_fri": "no",
+      "witness_representation": "vector / multilinear table",
+      "commitment_type": "multilinear PCS or IPA depending implementation",
+      "dominant_group_operations": "PCS/MSM; not implemented here",
+      "sumcheck_table_storage": "unknown for absent crate",
+      "native_verifier_available": "no",
+      "native_proof_serialization_available": "no",
+      "zero_knowledge": "unclear",
+      "streaming_integration_difficulty": "medium",
+      "phase1_decision": "not selected: no actual dependency/API found"
+    },
+    {
+      "id": "B1",
+      "name": "HyperPlonk-style multilinear PIOP",
+      "available_in_repo": false,
+      "prover_uses_fft_ntt": "no by multilinear design, but no production crate present",
+      "prover_uses_low_degree_extension": "no FRI path selected",
+      "prover_uses_fri": "no for selected path",
+      "witness_representation": "multilinear table",
+      "commitment_type": "multilinear PCS",
+      "dominant_group_operations": "PCS openings/MSM; not implemented here",
+      "sumcheck_table_storage": "unknown",
+      "native_verifier_available": "no",
+      "native_proof_serialization_available": "no",
+      "zero_knowledge": "unclear",
+      "streaming_integration_difficulty": "high",
+      "phase1_decision": "not selected: no actual dependency/API found"
+    },
+    {
+      "id": "B2",
+      "name": "Nova/HyperNova-related Sumcheck or folding backend",
+      "available_in_repo": false,
+      "prover_uses_fft_ntt": "no by target family, but no backend present",
+      "prover_uses_low_degree_extension": "no selected implementation",
+      "prover_uses_fri": "no selected implementation",
+      "witness_representation": "R1CS/folding state",
+      "commitment_type": "IPA/Pedersen depending implementation",
+      "dominant_group_operations": "folding commitments/MSM",
+      "sumcheck_table_storage": "unknown",
+      "native_verifier_available": "no",
+      "native_proof_serialization_available": "no",
+      "zero_knowledge": "unclear",
+      "streaming_integration_difficulty": "high",
+      "phase1_decision": "not selected: no actual dependency/API found"
+    },
+    {
+      "id": "B3",
+      "name": "Internal FFT-free multilinear Sumcheck Phase-1 backend",
+      "available_in_repo": true,
+      "prover_uses_fft_ntt": "no",
+      "prover_uses_low_degree_extension": "no",
+      "prover_uses_fri": "no",
+      "witness_representation": "vector / multilinear table",
+      "commitment_type": "none in Phase 1 toy backend; remote MSM is separate plumbing",
+      "dominant_group_operations": "none for native toy verifier; remote MSM plumbing measured separately",
+      "sumcheck_table_storage": "O(n) in local baseline, O(B) plus external storage in streaming mode",
+      "native_verifier_available": "yes, for the internal Phase-1 backend",
+      "native_proof_serialization_available": "yes, JSON",
+      "zero_knowledge": "absent",
+      "streaming_integration_difficulty": "low",
+      "phase1_decision": "selected for memory-bounded architecture validation only"
+    }
+  ],
+  "notes": [
+    "No production Spartan/HyperPlonk/Nova backend dependency was found in Cargo metadata.",
+    "The selected backend is internal and validates memory-bounded Sumcheck architecture, not production SNARK readiness."
+  ],
+  "fft_audit": {
+    "selected_backend": "INTERNAL_FFT_FREE_MULTILINEAR_SUMCHECK_PHASE1_BACKEND",
+    "searched_paths": [
+      "experiments/memory-bounded-sap/local_baseline",
+      "experiments/memory-bounded-sap/streaming_sumcheck",
+      "experiments/memory-bounded-sap/witness_stream",
+      "experiments/memory-bounded-sap/remote_msm",
+      "experiments/memory-bounded-sap/remote_parameters"
+    ],
+    "forbidden_tokens": [
+      "fft",
+      "ifft",
+      "ntt",
+      "intt",
+      "radix2",
+      "low-degree",
+      "fri"
+    ],
+    "hits": [],
+    "runtime_transform_calls": {
+      "fft": 0,
+      "ntt": 0,
+      "lde": 0,
+      "fri": 0
+    },
+    "status_marker": "CLIENT_PROVER_FFT_FREE_PASS"
+  }
+}

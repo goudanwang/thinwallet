@@ -1,0 +1,379 @@
+{
+  "attribute_predicates": "THINWALLET_ATTRIBUTE_PREDICATES_PASS",
+  "authenticated_revocation": "THINWALLET_AUTHENTICATED_REVOCATION_PASS",
+  "classification": "THINWALLET_CREDENTIAL_AUTHENTICITY_GADGET_PASS",
+  "workloads": {
+    "W0": {
+      "all_tests_passed": true,
+      "metadata": {
+        "constraint_composition": {
+          "boolean_multiplication": 4096
+        },
+        "construction_ms": 0.087295,
+        "fragmented_outputs": 64,
+        "issuer_authentication": "none (synthetic regression only)",
+        "issuer_authentication_assumption": "not a credential workload",
+        "m": 64,
+        "padded_size": 4096,
+        "padding_constraints": 0,
+        "padding_variables": 0,
+        "public_inputs": 1,
+        "q": 64,
+        "raw_constraints": 4096,
+        "raw_variables": 4096,
+        "relation": "synthetic_regression",
+        "revocation_depth": null,
+        "revocation_path_length": null,
+        "witness_elements": 4096,
+        "witness_generation_ms": 0.0,
+        "workload": "W0"
+      },
+      "tests": {}
+    },
+    "W1": {
+      "all_tests_passed": true,
+      "metadata": {
+        "constraint_composition": {
+          "disclosure_mask_range": 63,
+          "holder_binding_hash": 365,
+          "issuer_key_commitment": 731,
+          "issuer_mac_equality_first": 1,
+          "issuer_mimc7_prf_mac": 2920,
+          "nonce_session_binding": 1096,
+          "selective_disclosure": 2
+        },
+        "construction_ms": 2.834844,
+        "fragmented_outputs": 128,
+        "issuer_authentication": "91-round MiMC7 native-field PRF-MAC with authenticated issuer-key commitment",
+        "issuer_authentication_assumption": "Only the issuer knows the symmetric key; a registry or issuer authenticates the public key commitment and revocation root",
+        "m": 128,
+        "padded_size": 16384,
+        "padding_constraints": 11206,
+        "padding_variables": 11235,
+        "public_inputs": 7,
+        "q": 128,
+        "raw_constraints": 5178,
+        "raw_variables": 5149,
+        "relation": "single_credential",
+        "revocation_depth": null,
+        "revocation_path_length": null,
+        "witness_elements": 5149,
+        "witness_generation_ms": 1.981065,
+        "workload": "W1"
+      },
+      "tests": {
+        "boundary": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "modified_attribute": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_holder_binding": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_issuer": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_mac": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "valid": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "wrong_nonce": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        }
+      }
+    },
+    "W2": {
+      "all_tests_passed": true,
+      "metadata": {
+        "constraint_composition": {
+          "disclosure_mask_range": 63,
+          "expiry": 100,
+          "holder_binding_hash": 365,
+          "issuer_key_commitment": 731,
+          "issuer_mac_equality_first": 1,
+          "issuer_mimc7_prf_mac": 2920,
+          "nonce_session_binding": 1096,
+          "numeric_range": 200,
+          "selective_disclosure": 2
+        },
+        "construction_ms": 2.568161,
+        "fragmented_outputs": 128,
+        "issuer_authentication": "91-round MiMC7 native-field PRF-MAC with authenticated issuer-key commitment",
+        "issuer_authentication_assumption": "Only the issuer knows the symmetric key; a registry or issuer authenticates the public key commitment and revocation root",
+        "m": 128,
+        "padded_size": 16384,
+        "padding_constraints": 10906,
+        "padding_variables": 10944,
+        "public_inputs": 10,
+        "q": 128,
+        "raw_constraints": 5478,
+        "raw_variables": 5440,
+        "relation": "predicate_credential",
+        "revocation_depth": null,
+        "revocation_path_length": null,
+        "witness_elements": 5440,
+        "witness_generation_ms": 1.896336,
+        "workload": "W2"
+      },
+      "tests": {
+        "boundary": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "expired": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_attribute": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_holder_binding": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_issuer": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_mac": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "valid": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "wrong_nonce": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        }
+      }
+    },
+    "W3": {
+      "all_tests_passed": true,
+      "metadata": {
+        "constraint_composition": {
+          "disclosure_mask_range": 63,
+          "expiry": 100,
+          "holder_binding_hash": 365,
+          "issuer_key_commitment": 731,
+          "issuer_mac_equality_first": 1,
+          "issuer_mimc7_prf_mac": 2920,
+          "nonce_session_binding": 1096,
+          "numeric_range": 200,
+          "revocation_index": 57,
+          "revocation_merkle_hash": 5840,
+          "revocation_path_selection": 8,
+          "revocation_root": 1,
+          "revocation_root_freshness": 1,
+          "selective_disclosure": 2
+        },
+        "construction_ms": 6.674241,
+        "fragmented_outputs": 128,
+        "issuer_authentication": "91-round MiMC7 native-field PRF-MAC with authenticated issuer-key commitment",
+        "issuer_authentication_assumption": "Only the issuer knows the symmetric key; a registry or issuer authenticates the public key commitment and revocation root",
+        "m": 128,
+        "padded_size": 16384,
+        "padding_constraints": 4999,
+        "padding_variables": 5056,
+        "public_inputs": 13,
+        "q": 128,
+        "raw_constraints": 11385,
+        "raw_variables": 11328,
+        "relation": "revocable_credential",
+        "revocation_depth": 8,
+        "revocation_path_length": 8,
+        "witness_elements": 11328,
+        "witness_generation_ms": 4.491019,
+        "workload": "W3"
+      },
+      "tests": {
+        "boundary": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "expired": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "malformed_merkle_path": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_attribute": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_holder_binding": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_issuer": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_mac": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "revoked": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "stale_revocation_root": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "valid": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "wrong_nonce": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        }
+      }
+    },
+    "W4": {
+      "all_tests_passed": true,
+      "metadata": {
+        "constraint_composition": {
+          "cross_credential_hidden_equality": 1,
+          "cross_credential_holder_binding": 1,
+          "disclosure_mask_range": 63,
+          "expiry": 100,
+          "holder_binding_hash": 730,
+          "issuer_key_commitment": 1462,
+          "issuer_mac_equality_first": 1,
+          "issuer_mac_equality_second": 1,
+          "issuer_mimc7_prf_mac": 5840,
+          "nonce_session_binding": 1096,
+          "numeric_range": 200,
+          "revocation_index": 57,
+          "revocation_merkle_hash": 5840,
+          "revocation_path_selection": 8,
+          "revocation_root": 1,
+          "revocation_root_freshness": 1,
+          "selective_disclosure": 2
+        },
+        "construction_ms": 8.601134,
+        "fragmented_outputs": 128,
+        "issuer_authentication": "91-round MiMC7 native-field PRF-MAC with authenticated issuer-key commitment",
+        "issuer_authentication_assumption": "Only the issuer knows the symmetric key; a registry or issuer authenticates the public key commitment and revocation root",
+        "m": 128,
+        "padded_size": 16384,
+        "padding_constraints": 980,
+        "padding_variables": 1034,
+        "public_inputs": 15,
+        "q": 128,
+        "raw_constraints": 15404,
+        "raw_variables": 15350,
+        "relation": "multi_credential",
+        "revocation_depth": 8,
+        "revocation_path_length": 8,
+        "witness_elements": 15350,
+        "witness_generation_ms": 6.2945709999999995,
+        "workload": "W4"
+      },
+      "tests": {
+        "boundary": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "cross_credential_mismatch": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "expired": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "malformed_merkle_path": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_attribute": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_holder_binding": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_issuer": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "modified_mac": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "revoked": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "stale_revocation_root": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        },
+        "valid": {
+          "expected": "accept",
+          "passed": true,
+          "satisfiable": true
+        },
+        "wrong_nonce": {
+          "expected": "reject",
+          "passed": true,
+          "satisfiable": false
+        }
+      }
+    }
+  }
+}

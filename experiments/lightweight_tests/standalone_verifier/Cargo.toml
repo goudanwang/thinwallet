@@ -1,0 +1,18 @@
+[package]
+name = "thinwallet-standalone-verifier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+bincode = "1.3"
+chacha20poly1305 = "0.10"
+curve25519-dalek = { version = "=4.1.3", default-features = false, features = ["alloc", "serde", "rand_core"] }
+ed25519-dalek = { version = "=2.2.0", features = ["rand_core"] }
+merlin = "3"
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+sha3 = "0.10"
+thiserror = "1"
+libspartan_baseline = { package = "spartan-baseline-testable", path = "../../libspartan/vendor/spartan-baseline-testable-0.9.0", features = ["phase3ar2-deterministic-tests", "thinwallet-experiment"] }

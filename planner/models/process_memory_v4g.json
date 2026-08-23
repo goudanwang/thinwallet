@@ -1,0 +1,183 @@
+{
+  "model_version": "process-memory-v4g-1",
+  "classification": "V4G_PROCESS_MEMORY_MODEL_FROZEN",
+  "source_revision": "21be82f5222620cb20f5e7465705d125e8e797ad2bf3590f60d071eb4dd01b48",
+  "fit_policy": "implementation-derived formulas plus V4G calibration measurements only",
+  "forbidden_fit_sources": [
+    "V4F_ORIGINAL_HELD_OUT_SET",
+    "V4G_FINAL_HELD_OUT_SET"
+  ],
+  "features": [
+    "k",
+    "r",
+    "d",
+    "RevBackend",
+    "raw_constraints",
+    "padded_constraints",
+    "sparse_nonzero_entries",
+    "witness_elements",
+    "public_inputs",
+    "credential_source_bytes",
+    "total_path_siblings",
+    "q",
+    "m",
+    "token_bytes",
+    "upload_bytes",
+    "execution_mode"
+  ],
+  "padding_dimensions": [
+    "padded_n",
+    "q",
+    "m",
+    "fragmented_outputs",
+    "sumcheck_rounds",
+    "product_layer_dimensions",
+    "address_table_dimensions",
+    "opening_dimensions"
+  ],
+  "phases": {
+    "SourcePhase": {
+      "fixed_runtime_reserve_bytes": 2139750,
+      "thread_stack_reserve_bytes": 157286,
+      "frame_buffer_bytes": 65536,
+      "allocator_margin_bytes": 1048576,
+      "source_byte_multiplier": 2,
+      "credential_record_bytes": 4096,
+      "components": [
+        "authenticated source reader",
+        "XChaCha20-Poly1305 frame",
+        "canonical decoding",
+        "credential records"
+      ]
+    },
+    "RelationBuildPhase": {
+      "feature_order": [
+        "intercept",
+        "sparse_nonzero_entries/100000",
+        "next_power_of_two(max_sparse_matrix_entries)/100000"
+      ],
+      "coefficients_mib": [
+        2.919096330632188,
+        14.29034651503822,
+        -0.10604830328622547
+      ],
+      "components": [
+        "active relation rows",
+        "A/B/C entries",
+        "witness construction",
+        "MiMC state",
+        "revocation paths",
+        "builder capacities"
+      ]
+    },
+    "InstanceFinalizationPhase": {
+      "feature_order": [
+        "intercept",
+        "padded_n/65536",
+        "sparse_nonzero_entries/100000",
+        "next_power_of_two(max_sparse_matrix_entries)/100000"
+      ],
+      "coefficients_mib": [
+        -0.9639561688883216,
+        3.9144687584695035,
+        11.239866403413112,
+        14.926245033249753
+      ],
+      "components": [
+        "A/B/C materialization",
+        "matrix values",
+        "sorting/finalization",
+        "source objects at barrier"
+      ]
+    },
+    "ProvingPhase": {
+      "m2_feature_order": [
+        "intercept",
+        "padded_n/65536",
+        "sparse_nonzero_entries/100000",
+        "next_power_of_two(max_sparse_matrix_entries)/100000"
+      ],
+      "m2_coefficients_mib": [
+        4.374984284012081,
+        52.116215600614055,
+        9.544071560759956,
+        249.61297673875916
+      ],
+      "streaming_feature_order": [
+        "intercept",
+        "padded_n/65536",
+        "k",
+        "r",
+        "malicious_mode"
+      ],
+      "streaming_coefficients_mib": [
+        5.207176314459877,
+        31.93923505147299,
+        1.3598092397054073,
+        6.916521920098202,
+        -0.17708396911621144
+      ],
+      "components": [
+        "FS7 retained state",
+        "active Sumcheck",
+        "product layers",
+        "address/timestamp state",
+        "dereference source",
+        "transcript"
+      ]
+    },
+    "PBMOPhase": {
+      "fixed_bytes": 2139750,
+      "token_multiplier": 2,
+      "bounded_chunk_bytes": 1048576,
+      "malicious_check_bytes": 1048576,
+      "components": [
+        "token",
+        "masked scalar chunk",
+        "request/response bounded buffers",
+        "malicious aggregate check"
+      ]
+    },
+    "OpeningPhase": {
+      "fixed_bytes": 2139750,
+      "bytes_per_padded_constraint": 64,
+      "bytes_per_fragmented_output": 4096,
+      "components": [
+        "opening accumulator",
+        "equality sources",
+        "opening replay buffers"
+      ]
+    },
+    "ProofAssemblyPhase": {
+      "fixed_bytes": 3188326,
+      "bytes_per_public_input": 128,
+      "components": [
+        "transcript",
+        "proof serialization",
+        "public inputs"
+      ]
+    }
+  },
+  "runtime_reserve": {
+    "fixed": 2139750,
+    "thread": 157286,
+    "allocator": 0,
+    "provenance": [
+      "results/v4g/runtime_reserve/runtime_reserve_r1.json",
+      "results/v4g/runtime_reserve/runtime_reserve_r2.json",
+      "results/v4g/runtime_reserve/runtime_reserve_r3.json",
+      "results/v4g/runtime_reserve/runtime_reserve_r4.json",
+      "results/v4g/runtime_reserve/runtime_reserve_r5.json"
+    ]
+  },
+  "safety": {
+    "calibrated_one_sided_residual_bytes": 604299,
+    "required_execution_safety_margin_bytes": 8388608
+  },
+  "cgroup_model": {
+    "separate_from_process_accuracy_gate": true,
+    "expected_working_set": "process anonymous plus sampled file working set",
+    "conservative_upper_bound": "process safe upper bound plus temporary-file page-cache allowance",
+    "accuracy_claim": null
+  }
+}

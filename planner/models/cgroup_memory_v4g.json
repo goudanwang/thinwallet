@@ -1,0 +1,17 @@
+{
+  "model_version": "cgroup-memory-v4g-1",
+  "classification": "PROCESS_AND_CGROUP_PLANNERS_SEPARATED",
+  "process_model": "process-memory-v4g-1",
+  "accuracy_claim_percent": null,
+  "expected_working_set": "expected process VmHWM plus 4 MiB service/accounting reserve",
+  "expected_page_cache_allowance": "4 MiB plus 48 bytes per padded constraint",
+  "conservative_upper_bound": "safe process VmHWM plus expected page-cache allowance",
+  "scope": [
+    "process anonymous memory",
+    "resident file pages",
+    "temporary spill page cache",
+    "child/service accounting",
+    "cgroup accounting granularity"
+  ],
+  "provenance": "results/v4g/raw/runs/v4g_cgroup_diag_* under 2 GiB memory.max"
+}

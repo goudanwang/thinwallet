@@ -1,0 +1,85 @@
+{
+  "backend": "libspartan",
+  "revision": "0.9.0",
+  "status": "LIBSPARTAN_OPERATOR_GRAPH_COMPLETE",
+  "source": "static source audit of libspartan 0.9.0",
+  "nodes": [
+    {
+      "id": "WitnessGenerate",
+      "kind": "WitnessGenerate",
+      "privacy": "private",
+      "source": "caller constructs VarsAssignment and InputsAssignment",
+      "streamable": "relation-dependent"
+    },
+    {
+      "id": "EncodeInstance",
+      "kind": "CommitPolynomial",
+      "privacy": "public R1CS matrices",
+      "source": "SNARK::encode -> R1CSInstance::commit",
+      "transcript_barrier": "comm appended before proof"
+    },
+    {
+      "id": "CommitWitness",
+      "kind": "MSM",
+      "privacy": "private witness scalars plus blinds",
+      "source": "r1csproof.rs: poly_vars.commit",
+      "transcript_barrier": "comm_vars appended to transcript"
+    },
+    {
+      "id": "SumcheckPhase1",
+      "kind": "SumcheckRound",
+      "privacy": "private polynomial evaluations",
+      "source": "R1CSProof::prove_phase_one"
+    },
+    {
+      "id": "SumcheckPhase2",
+      "kind": "SumcheckRound",
+      "privacy": "private polynomial evaluations",
+      "source": "R1CSProof::prove_phase_two"
+    },
+    {
+      "id": "EvalSparsePolys",
+      "kind": "ConstraintEvaluate",
+      "privacy": "public R1CS, transcript challenges",
+      "source": "SNARK::prove eval_sparse_polys"
+    },
+    {
+      "id": "R1CSEvalProof",
+      "kind": "OpenPolynomial",
+      "privacy": "public R1CS decommitment",
+      "source": "R1CSEvalProof::prove"
+    },
+    {
+      "id": "ProofAssemble",
+      "kind": "ProofAssemble",
+      "privacy": "proof object",
+      "source": "SNARK { r1cs_sat_proof, inst_evals, r1cs_eval_proof }"
+    }
+  ],
+  "transcript_barriers": [
+    {
+      "name": "computation commitment",
+      "source": "SNARK::prove appends comm.comm to transcript",
+      "later_work_depends_on_hash": true
+    },
+    {
+      "name": "witness commitment",
+      "source": "R1CSProof::prove appends comm_vars",
+      "later_work_depends_on_hash": true
+    },
+    {
+      "name": "Sumcheck messages",
+      "source": "sumcheck.rs univariate messages",
+      "later_work_depends_on_hash": true
+    },
+    {
+      "name": "instance evaluation claims",
+      "source": "Ar_claim, Br_claim, Cr_claim appended before R1CSEvalProof",
+      "later_work_depends_on_hash": true
+    }
+  ],
+  "adapter_feasibility": {
+    "public_msm_provider_hook": false,
+    "blocker": "The libspartan 0.9.0 prover invokes concrete commitment traits in private modules; no public API permits replacing exactly one private MSM while preserving proof type and verifier unchanged."
+  }
+}
