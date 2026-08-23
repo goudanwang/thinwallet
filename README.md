@@ -12,6 +12,8 @@ Core implementation directories:
 - `experiments/thinwallet-instrumentation/`: shared measurement support;
 - `experiments/memory-bounded-sap/`: memory-bounded proving experiments;
 - `experiments/a2dp-circuit/`: isolated Circom credential-circuit experiments;
+- `experiments/frontier-tool/`: privacy-frontier analyzer, trace schemas,
+  recorder mapping, Table 1 generator, and regression tests;
 - `experiments/lightweight_tests/`: standalone verification and selected-path
   regression harnesses.
 

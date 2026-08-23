@@ -1,0 +1,50 @@
+{
+  "name": "groth16 (AHKM's target setting)",
+  "public_leakage": ["srs", "circuit", "x", "dims"],
+  "roots": ["s_tape"],
+
+  "seeds": {
+    "srs":     {"sec": "pub"},
+    "circuit": {"sec": "pub"},
+    "x":       {"sec": "pub"},
+    "w":       {"sec": "priv"}
+  },
+
+  "events": [
+    {"id": "extend_witness",   "in": ["w", "x", "circuit"], "out": ["z"]},
+    {"id": "fft_forward",      "in": ["z", "circuit"],      "out": ["za", "zb", "zc"],
+                               "_note": "three forward FFTs over witness-derived vectors"},
+    {"id": "fft_quotient",     "in": ["za", "zb", "zc"],    "out": ["qpoly"],
+                               "_note": "three further FFTs producing the quotient coefficients"},
+    {"id": "sample_blinders",  "in": [], "out": ["r", "s"], "draws": "s_tape"},
+
+    {"id": "msm_a",   "in": ["z", "srs"],           "out": ["A_raw"]},
+    {"id": "msm_b_g1","in": ["z", "srs"],           "out": ["B1_raw"]},
+    {"id": "msm_b_g2","in": ["z", "srs"],           "out": ["B2_raw"]},
+    {"id": "msm_c",   "in": ["z", "srs"],           "out": ["C_raw"]},
+    {"id": "msm_h",   "in": ["qpoly", "srs"],       "out": ["H_raw"]},
+
+    {"id": "assemble_proof",
+     "in": ["A_raw", "B1_raw", "B2_raw", "C_raw", "H_raw", "r", "s", "srs"],
+     "out": ["Pi"], "release": ["Pi"]}
+  ],
+
+  "certificates": {
+    "Pi": {"rule": "ProofProj", "ref": "native Groth16 zero knowledge"}
+  },
+
+  "delegation_units": [
+    {"name": "msm_a",    "events": ["msm_a"],
+     "certificate": {"rule": "Mask", "scheme": "EMSM"},
+     "note": "AHKM encrypted MSM; client O(1) group ops, Theta(n) ciphertext"},
+    {"name": "msm_b_g1", "events": ["msm_b_g1"],
+     "certificate": {"rule": "Mask", "scheme": "EMSM"}},
+    {"name": "msm_b_g2", "events": ["msm_b_g2"],
+     "certificate": {"rule": "Mask", "scheme": "EMSM"}},
+    {"name": "msm_c",    "events": ["msm_c"],
+     "certificate": {"rule": "Mask", "scheme": "EMSM"}},
+    {"name": "msm_h",    "events": ["msm_h"],
+     "certificate": {"rule": "Mask", "scheme": "EMSM"},
+     "note": "quotient MSM; its FFT inputs stay client-side"}
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "name": "spartan-hyrax (stock, single tape root)",
+  "_source": [
+    "Event ids follow the implementation, not the paper's prose.",
+    "r1csproof.rs:183   R1CSProof::prove",
+    "dense_mlpoly.rs:320 DensePolynomial::commit",
+    "dense_mlpoly.rs:192 commit_inner (multicore) / 257 (non-multicore)",
+    "pbmo_commitment.rs:70 maybe_commit_private_rows",
+    "sparse_mlpoly.rs:2701 SparseMatPolyEvalProof::prove",
+    "sparse_mlpoly.rs:2568 PolyEvalNetworkProof::prove"
+  ],
+  "public_leakage": [
+    "pp", "circ", "x", "G", "H", "ver", "cid", "h_circ", "sid", "iid",
+    "dims", "canonical_lengths"
+  ],
+  "roots": ["proof"],
+
+  "seeds": {
+    "pp":      {"sec": "pub"},
+    "circ":    {"sec": "pub"},
+    "x":       {"sec": "pub"},
+    "G":       {"sec": "pub"},
+    "H":       {"sec": "pub"},
+    "pubmeta": {"sec": "pub"},
+    "w":       {"sec": "priv"}
+  },
+
+  "events": [
+    {"id": "materialize_relation", "in": ["pp", "circ"], "out": ["R_raw"]},
+    {"id": "build_instance",       "in": ["R_raw"],      "out": ["inst"]},
+
+    {"id": "dense_poly_new",       "in": ["w"], "out": ["poly_vars"],
+                                   "_at": "r1csproof.rs:203"},
+    {"id": "sample_poly_blinds",   "in": [], "out": ["blinds_vars"],
+                                   "draws": "proof",
+                                   "_at": "dense_mlpoly.rs:339 random_vector(b\"poly_blinds\")"},
+    {"id": "commit_inner_row_msm", "in": ["poly_vars", "G"], "out": ["row_points"],
+                                   "_at": "dense_mlpoly.rs:202 maybe_commit_private_rows"},
+    {"id": "native_blinding",      "in": ["row_points", "blinds_vars", "H"],
+                                   "out": ["comm_vars"], "release": ["comm_vars"],
+                                   "_at": "dense_mlpoly.rs:204-210"},
+    {"id": "absorb_poly_commitment", "in": ["comm_vars"], "out": ["tr_commit"],
+                                   "sec": "pub",
+                                   "_at": "r1csproof.rs:209 append_to_transcript(b\"poly_commitment\")"},
+
+    {"id": "assemble_z",           "in": ["w", "x"], "out": ["z"],
+                                   "_at": "r1csproof.rs:215-226"},
+    {"id": "challenge_tau",        "in": ["tr_commit"], "out": ["tau"],
+                                   "sec": "pub",
+                                   "_at": "r1csproof.rs:229 challenge_vector(b\"challenge_tau\")"},
+    {"id": "multiply_vec",         "in": ["z", "inst", "tau"],
+                                   "out": ["poly_tau", "poly_Az", "poly_Bz", "poly_Cz"],
+                                   "_at": "r1csproof.rs:231-237"},
+
+    {"id": "prove_phase_one",      "in": ["poly_tau", "poly_Az", "poly_Bz", "poly_Cz"],
+                                   "out": ["sc_proof_phase1", "rx"],
+                                   "release": ["sc_proof_phase1"],
+                                   "draws": "proof",
+                                   "_at": "r1csproof.rs:239-252"},
+    {"id": "commit_claims_phase1", "in": ["poly_Az", "poly_Bz", "poly_Cz", "rx"],
+                                   "out": ["comm_claims1"], "release": ["comm_claims1"],
+                                   "draws": "proof",
+                                   "_at": "r1csproof.rs:262-296"},
+    {"id": "prove_phase_two",      "in": ["z", "inst", "comm_claims1"],
+                                   "out": ["sc_proof_phase2", "ry"],
+                                   "release": ["sc_proof_phase2"],
+                                   "draws": "proof",
+                                   "_at": "r1csproof.rs:298-345"},
+    {"id": "poly_eval_proof",      "in": ["poly_vars", "blinds_vars", "ry", "G", "H"],
+                                   "out": ["open_state", "proof_eval_vars_at_ry"],
+                                   "release": ["proof_eval_vars_at_ry"],
+                                   "draws": "proof",
+                                   "_at": "r1csproof.rs:355-366, dense_mlpoly.rs:899 PolyEvalProof::prove"},
+    {"id": "assemble_pi_sat",      "in": ["comm_vars", "sc_proof_phase1", "comm_claims1",
+                                          "sc_proof_phase2", "proof_eval_vars_at_ry"],
+                                   "out": ["pi_sat"], "release": ["pi_sat"]},
+
+    {"id": "fix_d_pub",            "in": ["pi_sat", "x", "pubmeta"],
+                                   "out": ["d_pub"], "release": ["d_pub"]},
+    {"id": "derive_eval_point",    "in": ["d_pub"], "out": ["rx_ry"], "sec": "pub"},
+    {"id": "derefs_commit",        "in": ["inst", "rx_ry"], "out": ["comm_derefs"],
+                                   "release": ["comm_derefs"],
+                                   "_at": "sparse_mlpoly.rs:2736 derefs.commit"},
+    {"id": "product_layer_proof",  "in": ["inst", "comm_derefs"],
+                                   "out": ["proof_prod_layer", "rand_mem", "rand_ops"],
+                                   "release": ["proof_prod_layer"],
+                                   "_at": "sparse_mlpoly.rs:2580 ProductLayerProof::prove"},
+    {"id": "hash_layer_proof",     "in": ["inst", "rand_mem", "rand_ops"],
+                                   "out": ["proof_hash_layer"],
+                                   "release": ["proof_hash_layer"],
+                                   "draws": "proof",
+                                   "_at": "sparse_mlpoly.rs:2593 HashLayerProof::prove"},
+    {"id": "assemble_pi_eval",     "in": ["comm_derefs", "proof_prod_layer", "proof_hash_layer"],
+                                   "out": ["pi_eval"], "release": ["pi_eval"]},
+    {"id": "assemble_proof",       "in": ["pi_sat", "pi_eval"], "out": ["Pi"],
+                                   "release": ["Pi"]}
+  ],
+
+  "_note_no_seal": "LegacyShared does not seal; ProverRandomnessPlan::seal_sat_frontier only audits",
+
+
+  "certificates": {
+    "comm_vars":             {"rule": "Hide",      "ref": "Hyrax hiding row commitments"},
+    "sc_proof_phase1":       {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "comm_claims1":          {"rule": "Hide",      "ref": "Pedersen claim commitments"},
+    "sc_proof_phase2":       {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "proof_eval_vars_at_ry": {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "pi_sat":                {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "d_pub":                 {"rule": "PubFun",    "ref": "public eval claims and replay state"},
+    "comm_derefs":           {"rule": "ProofProj", "ref": "public sparse-matrix commitments"},
+    "proof_prod_layer":      {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "proof_hash_layer":      {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "pi_eval":               {"rule": "ProofProj", "ref": "app:sat-frontier-zk"},
+    "Pi":                    {"rule": "ProofProj", "ref": "native Spartan zero knowledge"}
+  },
+
+  "delegation_units": [
+    {
+      "name": "hyrax_row_msm",
+      "events": ["commit_inner_row_msm"],
+      "certificate": {"rule": "Mask", "scheme": "PBMO",
+                      "ref": "app:pbmo-security"},
+      "note": "q=512 ordered short rows of m=512 against one shared basis"
+    }
+  ]
+}
